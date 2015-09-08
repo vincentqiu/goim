@@ -159,6 +159,46 @@ func getSubKeys(res chan *rproto.MGetReply, serverId string, userIds []int64) {
 	res <- reply
 }
 
+func genOnlineUids(userIds []int64) (uids []int64) {
+	var (
+		i, j, k int
+		node    string
+		session *rproto.GetReply
+		reply   *rproto.MGetReply
+		uid     int64
+		ids     []int64
+		ok      bool
+		m       = make(map[string][]int64)
+		res     = make(chan *rproto.MGetReply, 1)
+	)
+	for i = 0; i < len(userIds); i++ {
+		node = getRouterNode(userIds[i])
+		if ids, ok = m[node]; !ok {
+			ids = []int64{}
+		}
+		ids = append(ids, userIds[i])
+		m[node] = ids
+	}
+	for node, ids = range m {
+		go getSubKeys(res, node, ids)
+	}
+	k = len(m)
+	for k > 0 {
+		k--
+		if reply = <-res; reply == nil {
+			continue
+		}
+		for j = 0; j < len(reply.UserIds); j++ {
+			session = reply.Sessions[j]
+			uid = reply.UserIds[j]
+			if len(session.Seqs) > 0 {
+				uids = append(uids, uid)
+			}
+		}
+	}
+	return
+}
+
 func genSubKeys(userIds []int64) (divide map[int32][]string) {
 	var (
 		i, j, k      int

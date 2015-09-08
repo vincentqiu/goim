@@ -24,7 +24,8 @@ func initTCP() {
 	// time.Sleep(time.Second * 31)
 	proto.Operation = OP_AUTH
 	proto.SeqId = seqId
-	proto.Body = []byte("test")
+	//proto.Body = []byte("100_1")
+	proto.Body = []byte(token)
 	if err = tcpWriteProto(wr, proto); err != nil {
 		log.Error("tcpWriteProto() error(%v)", err)
 		return

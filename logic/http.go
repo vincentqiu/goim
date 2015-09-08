@@ -18,6 +18,7 @@ func InitHTTP() (err error) {
 		httpServeMux := http.NewServeMux()
 		httpServeMux.HandleFunc("/1/push", Push)
 		httpServeMux.HandleFunc("/1/pushs", Pushs)
+		httpServeMux.HandleFunc("/1/onlines", Onlines)
 		httpServeMux.HandleFunc("/1/push/all", PushAll)
 		httpServeMux.HandleFunc("/1/count", Count)
 		log.Info("start http listen:\"%s\"", Conf.HTTPAddrs[i])
@@ -161,6 +162,41 @@ func Pushs(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	res["ret"] = OK
+	return
+}
+
+// {"m":{"test":1},"u":[1,2,3]}
+//
+func Onlines(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", 405)
+		return
+	}
+	var (
+		body      string
+		bodyBytes []byte
+		userIds   []int64
+		err       error
+		res       = map[string]interface{}{"ret": OK}
+		uids      []int64
+	)
+	defer retPWrite(w, r, res, &body, time.Now())
+	if bodyBytes, err = ioutil.ReadAll(r.Body); err != nil {
+		log.Error("ioutil.ReadAll() failed (%s)", err)
+		res["ret"] = InternalErr
+		return
+	}
+	body = string(bodyBytes)
+	if bodyBytes, userIds, err = parsePushsBody(bodyBytes); err != nil {
+		log.Error("parsePushsBody(\"%s\") error(%s)", body, err)
+		res["ret"] = InternalErr
+		return
+	}
+
+	uids = genOnlineUids(userIds)
+
+	res["uids"] = uids
 	res["ret"] = OK
 	return
 }
