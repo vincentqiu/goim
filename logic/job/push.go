@@ -30,6 +30,7 @@ func processPush(ch chan *pushArg) {
 	var arg *pushArg
 	for {
 		arg = <-ch
+		log.Debug("processpush  %d, %d", arg.RoomId, define.NoRoom)
 		if arg.RoomId == define.NoRoom {
 			mpushComet(arg.C, arg.SubKeys, arg.Msg)
 		} else {
@@ -45,7 +46,7 @@ func mpush(server int32, subkeys []string, msg []byte) {
 		log.Error("getCometByServerId(\"%d\") error(%v)", server, err)
 		return
 	}
-	pushChs[rand.Int()%Conf.PushChan] <- &pushArg{C: c, SubKeys: subkeys, Msg: msg}
+	pushChs[rand.Int()%Conf.PushChan] <- &pushArg{C: c, SubKeys: subkeys, Msg: msg, RoomId: define.NoRoom}
 }
 
 // mssage broadcast room

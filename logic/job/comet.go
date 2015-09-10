@@ -60,6 +60,7 @@ func mpushComet(c *protorpc.Client, subkeys []string, body []byte) {
 		rep  = &cproto.MPushMsgReply{}
 		err  error
 	)
+	log.Debug("call comet mpush msg")
 	if err = c.Call(CometServiceMPushMsg, args, rep); err != nil {
 		log.Error("c.Call(\"%s\", %v, reply) error(%v)", CometServiceMPushMsg, *args, err)
 	}

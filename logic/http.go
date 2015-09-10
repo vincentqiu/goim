@@ -102,6 +102,8 @@ func Push(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	subKeys = genSubKey(userId)
+	log.Debug(subKeys, body)
+
 	for server, keys = range subKeys {
 		if err = mpushKafka(server, keys, bodyBytes); err != nil {
 			res["ret"] = InternalErr

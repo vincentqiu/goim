@@ -68,6 +68,7 @@ func (this *PushRPC) PushMsgs(arg *proto.PushMsgsArg, reply *proto.PushMsgsReply
 		bucket  *Bucket
 		channel *Channel
 	)
+	log.Debug("comet rpc pushmsgs")
 	reply.Index = -1
 	if arg == nil || len(arg.Vers) != len(arg.Operations) || len(arg.Operations) != len(arg.Msgs) {
 		err = ErrPushMsgsArg
@@ -93,8 +94,13 @@ func (this *PushRPC) MPushMsg(arg *proto.MPushMsgArg, reply *proto.MPushMsgReply
 		err = ErrMPushMsgArg
 		return
 	}
+
+	log.Debug("comet rpc mpushmsg")
+	log.Debug(arg.Keys)
+
 	for n, key = range arg.Keys {
 		bucket = DefaultServer.Bucket(key)
+		log.Debug("mpush key :%s , msg :%s ", key, arg.Msg)
 		if channel = bucket.Get(key); channel != nil {
 			if err = channel.PushMsg(int16(arg.Ver), arg.Operation, arg.Msg); err != nil {
 				return
@@ -113,6 +119,7 @@ func (this *PushRPC) MPushMsgs(arg *proto.MPushMsgsArg, reply *proto.MPushMsgsRe
 		key     string
 		n       int
 	)
+	log.Debug("comet rpc mpushmsgs")
 	reply.Index = -1
 	if arg == nil || len(arg.Keys) != len(arg.Vers) || len(arg.Vers) != len(arg.Operations) || len(arg.Operations) != len(arg.Msgs) {
 		err = ErrMPushMsgsArg

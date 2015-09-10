@@ -39,7 +39,7 @@ func InitKafka() error {
 		for msg := range cg.Messages() {
 			log.Info("deal with topic:%s, partitionId:%d, Offset:%d, Key:%s msg:%s", msg.Topic, msg.Partition, msg.Offset, msg.Key, msg.Value)
 			push(string(msg.Key), msg.Value)
-			cg.CommitUpto(msg)
+			//cg.CommitUpto(msg)
 		}
 	}()
 	return nil
