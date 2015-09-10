@@ -42,13 +42,19 @@ type Config struct {
 	PprofBind []string `goconf:"base:pprof.bind:,"`
 	StatBind  []string `goconf:"base:stat.bind:,"`
 	ServerId  int32    `goconf:"base:server.id"`
+	Debug     bool     `goconf:"base:debug"`
 	// tcp
 	TCPBind      []string `goconf:"tcp:bind:,"`
 	TCPSndbuf    int      `goconf:"tcp:sndbuf:memory"`
 	TCPRcvbuf    int      `goconf:"tcp:rcvbuf:memory"`
 	TCPKeepalive bool     `goconf:"tcp:keepalive"`
+
 	// websocket
-	WebsocketBind []string `goconf:"websocket:bind:,"`
+	WebsocketBind    []string `goconf:"websocket:bind:,"`
+	WebsocketTLSOpen bool     `goconf:"websocket:tls.open"`
+	WebsocketTLSBind []string `goconf:"websocket:tls.bind:,"`
+	CertFile         string   `goconf:"websocket:cert.file"`
+	PrivateFile      string   `goconf:"websocket:private.file"`
 	// http
 	HTTPBind []string `goconf:"http:bind:,"`
 	// proto section
@@ -86,6 +92,7 @@ func NewConfig() *Config {
 		MaxProc:   runtime.NumCPU(),
 		PprofBind: []string{"localhost:6971"},
 		StatBind:  []string{"localhost:6972"},
+		Debug:     true,
 		// tcp
 		TCPBind:      []string{"localhost:8080"},
 		TCPSndbuf:    1024,

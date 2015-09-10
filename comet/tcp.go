@@ -4,6 +4,7 @@ import (
 	"bufio"
 	log "code.google.com/p/log4go"
 	"github.com/Terry-Mao/goim/define"
+	"github.com/Terry-Mao/goim/libs/io/ioutil"
 	"net"
 	"sync"
 	"time"
@@ -142,7 +143,7 @@ failed:
 	// dialog finish
 	// may call twice
 	if err = conn.Close(); err != nil {
-		log.Error("reader: conn.Close() error(%v)")
+		log.Error("reader: conn.Close() error(%v)", err)
 	}
 	PutBufioReader(rrp, rr)
 	b.Del(key)
@@ -267,49 +268,63 @@ func (server *Server) readTCPRequest(rr *bufio.Reader, pb []byte, proto *Proto) 
 		headerLen int16
 		bodyLen   int
 	)
-	if err = ReadAll(rr, pb[:packLenSize]); err != nil {
+	if err = ioutil.ReadAll(rr, pb[:packLenSize]); err != nil {
 		return
 	}
 	packLen = BigEndian.Int32(pb[:packLenSize])
-	log.Debug("packLen: %d", packLen)
+	if Conf.Debug {
+		log.Debug("packLen: %d", packLen)
+	}
 	if packLen > maxPackLen {
 		return ErrProtoPackLen
 	}
-	if err = ReadAll(rr, pb[:headerLenSize]); err != nil {
+	if err = ioutil.ReadAll(rr, pb[:headerLenSize]); err != nil {
 		return
 	}
 	headerLen = BigEndian.Int16(pb[:headerLenSize])
-	log.Debug("headerLen: %d", headerLen)
+	if Conf.Debug {
+		log.Debug("headerLen: %d", headerLen)
+	}
 	if headerLen != rawHeaderLen {
 		return ErrProtoHeaderLen
 	}
-	if err = ReadAll(rr, pb[:VerSize]); err != nil {
+	if err = ioutil.ReadAll(rr, pb[:VerSize]); err != nil {
 		return
 	}
 	proto.Ver = BigEndian.Int16(pb[:VerSize])
-	log.Debug("protoVer: %d", proto.Ver)
-	if err = ReadAll(rr, pb[:OperationSize]); err != nil {
+	if Conf.Debug {
+		log.Debug("protoVer: %d", proto.Ver)
+	}
+	if err = ioutil.ReadAll(rr, pb[:OperationSize]); err != nil {
 		return
 	}
 	proto.Operation = BigEndian.Int32(pb[:OperationSize])
-	log.Debug("operation: %d", proto.Operation)
-	if err = ReadAll(rr, pb[:SeqIdSize]); err != nil {
+	if Conf.Debug {
+		log.Debug("operation: %d", proto.Operation)
+	}
+	if err = ioutil.ReadAll(rr, pb[:SeqIdSize]); err != nil {
 		return
 	}
 	proto.SeqId = BigEndian.Int32(pb[:SeqIdSize])
-	log.Debug("seqId: %d", proto.SeqId)
+	if Conf.Debug {
+		log.Debug("seqId: %d", proto.SeqId)
+	}
 	bodyLen = int(packLen - int32(headerLen))
-	log.Debug("read body len: %d", bodyLen)
+	if Conf.Debug {
+		log.Debug("read body len: %d", bodyLen)
+	}
 	if bodyLen > 0 {
 		proto.Body = make([]byte, bodyLen)
-		if err = ReadAll(rr, proto.Body); err != nil {
+		if err = ioutil.ReadAll(rr, proto.Body); err != nil {
 			log.Error("body: ReadAll() error(%v)", err)
 			return
 		}
 	} else {
 		proto.Body = nil
 	}
-	log.Debug("read proto: %v", proto)
+	if Conf.Debug {
+		log.Debug("read proto: %v", proto)
+	}
 	return
 }
 
