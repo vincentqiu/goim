@@ -30,7 +30,6 @@ func processPush(ch chan *pushArg) {
 	var arg *pushArg
 	for {
 		arg = <-ch
-		log.Debug("processpush  %d, %d", arg.RoomId, define.NoRoom)
 		if arg.RoomId == define.NoRoom {
 			mpushComet(arg.C, arg.SubKeys, arg.Msg)
 		} else {
