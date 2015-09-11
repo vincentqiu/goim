@@ -25,13 +25,3 @@ _testmain.go
 
 .idea
 
-router/router
-router/router.conf
-logic/logic
-logic/logic.conf
-logic/job/job
-logic/job/push-job.conf
-comet/comet
-comet/comet.conf
-comet/client/client
-comet/client/client.conf
