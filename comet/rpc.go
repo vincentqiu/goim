@@ -96,11 +96,10 @@ func (this *PushRPC) MPushMsg(arg *proto.MPushMsgArg, reply *proto.MPushMsgReply
 	}
 
 	log.Debug("comet rpc mpushmsg")
-	log.Debug(arg.Keys)
 
 	for n, key = range arg.Keys {
 		bucket = DefaultServer.Bucket(key)
-		log.Debug("mpush key :%s , msg :%s ", key, arg.Msg)
+		log.Debug("mpush key :%s , msg :%s n: %d", key, arg.Msg, int32(n))
 		if channel = bucket.Get(key); channel != nil {
 			if err = channel.PushMsg(int16(arg.Ver), arg.Operation, arg.Msg); err != nil {
 				return

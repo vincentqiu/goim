@@ -17,7 +17,13 @@ const (
 	OFFSETS_COMMIT_INTERVAL            = 10 * time.Second
 )
 
+var (
+	cg *consumergroup.ConsumerGroup
+)
+
 func InitKafka() error {
+
+	var err error
 	log.Info("start topic:%s consumer", Conf.KafkaTopic)
 	log.Info("consumer group name:%s", KAFKA_GROUP_NAME)
 	config := consumergroup.NewConfig()
@@ -26,7 +32,7 @@ func InitKafka() error {
 	config.Offsets.CommitInterval = OFFSETS_COMMIT_INTERVAL
 	config.Zookeeper.Chroot = Conf.ZKRoot
 	kafkaTopics := []string{Conf.KafkaTopic}
-	cg, err := consumergroup.JoinConsumerGroup(KAFKA_GROUP_NAME, kafkaTopics, Conf.ZKAddrs, config)
+	cg, err = consumergroup.JoinConsumerGroup(KAFKA_GROUP_NAME, kafkaTopics, Conf.ZKAddrs, config)
 	if err != nil {
 		return err
 	}
@@ -37,9 +43,9 @@ func InitKafka() error {
 	}()
 	go func() {
 		for msg := range cg.Messages() {
-			log.Info("deal with topic:%s, partitionId:%d, Offset:%d, Key:%s msg:%s", msg.Topic, msg.Partition, msg.Offset, msg.Key, msg.Value)
+			log.Info("deal with topic:%s, partitionId:%d, Offset:%d, Key:%s msg: %s", msg.Topic, msg.Partition, msg.Offset, msg.Key, msg.Value)
 			push(string(msg.Key), msg.Value)
-			//cg.CommitUpto(msg)
+			cg.CommitUpto(msg)
 		}
 	}()
 	return nil
