@@ -3,6 +3,7 @@ package main
 import (
 	log "code.google.com/p/log4go"
 	_ "github.com/Terry-Mao/goim/define"
+	"strconv"
 )
 
 // developer could implement "ThirdAuth" interface for decide how get userId, or roomId
@@ -22,6 +23,8 @@ func (a *DefaultAuther) Auth(token string) (userId int64, roomId int32, err erro
 	if userId, roomId, err = tokenDecode(token); err != nil {
 		log.Error("tokenDecode(\"%s\") error(%s)", token, err)
 		return
+	if roomId < 1 {
+		roomId = define.NoRoom
 	}
 
 	//userId = 0
