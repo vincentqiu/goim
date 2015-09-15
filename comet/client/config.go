@@ -10,10 +10,13 @@ var (
 	gconf    *goconf.Config
 	Conf     *Config
 	confFile string
+	token    string
 )
 
 func init() {
 	flag.StringVar(&confFile, "c", "./client.conf", " set client config file path")
+	flag.StringVar(&token, "t", "100_2", " client token")
+
 }
 
 type Config struct {
