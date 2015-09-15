@@ -28,3 +28,26 @@ func decode(key string) (userId int64, seq int32, err error) {
 	seq = int32(t)
 	return
 }
+
+func tokenEncode(userId int64, roomId int32) string {
+	return fmt.Sprintf("%d_%d", userId, roomId)
+}
+
+func tokenDecode(key string) (userId int64, roomId int32, err error) {
+	var (
+		idx int
+		t   int64
+	)
+	if idx = strings.IndexByte(key, '_'); idx == -1 {
+		err = ErrDecodeKey
+		return
+	}
+	if userId, err = strconv.ParseInt(key[:idx], 10, 64); err != nil {
+		return
+	}
+	if t, err = strconv.ParseInt(key[idx+1:], 10, 32); err != nil {
+		return
+	}
+	roomId = int32(t)
+	return
+}
