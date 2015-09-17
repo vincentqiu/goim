@@ -24,10 +24,7 @@ _testmain.go
 *.prof
 
 .idea
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 router/router
 router/router.conf
 logic/logic
