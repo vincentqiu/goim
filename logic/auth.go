@@ -20,7 +20,7 @@ func NewDefaultAuther() *DefaultAuther {
 }
 
 func (a *DefaultAuther) Auth(token string) (userId int64, roomId int32, err error) {
-	// token verify, and return uid, roomid;
+
 	if userId, roomId, err = tokenDecode(token); err != nil {
 		log.Error("tokenDecode(\"%s\") error(%s)", token, err)
 		return
